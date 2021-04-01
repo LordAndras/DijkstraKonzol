@@ -40,8 +40,8 @@ public class GrafJaro {
         elozoNode = new int[gm.getCsucsokSzama()];
         teljesTavStarttol = new long[gm.getCsucsokSzama()];
 
-        for (long l : teljesTavStarttol) {
-            l = Long.MAX_VALUE;
+        for (long tavolsag : teljesTavStarttol) {
+            tavolsag = Long.MAX_VALUE;
         }
 
     }
