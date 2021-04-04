@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -16,6 +17,7 @@ import java.util.Map;
  */
 public class GrafJaro {
 
+    private Logger logger = Logger.getLogger(GrafJaro.class.getName());
     private List<Character> latogatottCsucsok;
     private GrafModel gm;
     private char start;
@@ -41,7 +43,9 @@ public class GrafJaro {
         teljesTavStarttol = new long[gm.getCsucsokSzama()];
 
         for (long tavolsag : teljesTavStarttol) {
-            tavolsag = Long.MAX_VALUE;
+            if (tavolsag == 0) {
+                tavolsag = Long.MAX_VALUE;
+            }
         }
 
     }
@@ -54,7 +58,7 @@ public class GrafJaro {
         }
 
         for (int i = 0; i < teljesTavStarttol.length; i++) {
-            System.out.println("A(z) " + (char) (gm.getKARAKTER_A() + i) + " csomópont távolsága " + (char) start + ". csomóponttól: "
+            logger.info("A(z) " + (char) (gm.getKARAKTER_A() + i) + " csomópont távolsága " + start + ". csomóponttól: "
                     + teljesTavStarttol[i] + " egység. Megelőző csomópont: " + (char) (gm.getKARAKTER_A() + elozoNode[i]));
         }
 
@@ -96,17 +100,15 @@ public class GrafJaro {
                 }
             } else {
                 long tavStarttol = teljesTavStarttol[aktualisNode];
-                if (aktualisTavok[i] != Long.MAX_VALUE) {
-                    if (aktualisTavok[i] + tavStarttol < teljesTavStarttol[i]) {
-                        teljesTavStarttol[i] = aktualisTavok[i] + tavStarttol;
-                        elozoNode[i] = aktualisNode;
-                    }
+                if (aktualisTavok[i] != Long.MAX_VALUE && aktualisTavok[i] + tavStarttol < teljesTavStarttol[i]) {
+                    teljesTavStarttol[i] = aktualisTavok[i] + tavStarttol;
+                    elozoNode[i] = aktualisNode;
                 }
             }
         }
         gm.getNemLatogatott().remove((Character) aktualisCsucs);
         latogatottCsucsok.add((Character) aktualisCsucs);
-        aktualisCsucs = (char) minKeres(teljesTavStarttol);
+        aktualisCsucs = minKeres(teljesTavStarttol);
 
     }
 }

@@ -10,13 +10,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.log4j.Logger;
 
 public class GrafModel implements Serializable {
 
-    private final int KARAKTER_A = 65;
+    private Logger logger = Logger.getLogger(GrafModel.class.getName());
+    private static final int KARAKTER_A = 65;
     private int csucsokSzama;
     private List<Character> nemLatogatott;
-    private List<Map> csucsMapList;
+    private List<Map<Character, Integer>> csucsMapList;
     private char start = 'A';
 
     public GrafModel() {
@@ -37,7 +39,7 @@ public class GrafModel implements Serializable {
 
     private void mapInit() {
         for (int j = 0; j < csucsokSzama; j++) {
-            csucsMapList.add(new HashMap<Character, Integer>());
+            csucsMapList.add(new HashMap<>());
             csucsMapList.get(j).put((char) (KARAKTER_A + j), 0);
         }
 
@@ -45,34 +47,31 @@ public class GrafModel implements Serializable {
 
     public void elezo(char origo, char b, int i) {
 
-        Map<Character, Integer> aktMap = new HashMap<>();
-        Map<Character, Integer> masikCsucsMap = new HashMap<>();
+        Map<Character, Integer> aktMap;
+        Map<Character, Integer> masikCsucsMap;
 
         for (Character ch : nemLatogatott) {
 
             if (ch == origo) {
                 aktMap = csucsMapList.get((int) ch - KARAKTER_A);
-                if (aktMap.get(b) == null) {
-                    aktMap.put(b, i);
-                }
-
-                masikCsucsMap = csucsMapList.get((int) b - KARAKTER_A);
-                if (masikCsucsMap.get(origo) == null) {
-                    masikCsucsMap.put(origo, i);
-                }
+                aktMap.computeIfAbsent(b, k -> i);
 
             }
+
+            masikCsucsMap = csucsMapList.get((int) b - KARAKTER_A);
+            masikCsucsMap.computeIfAbsent(origo, k -> i);
+
         }
 
     }
 
     public void grafEllenor() {
-        for (Map map : csucsMapList) {
+        for (Map<Character, Integer> map : csucsMapList) {
             for (Object entry : map.entrySet()) {
                 Map.Entry<Character, Integer> beiras = (Map.Entry<Character, Integer>) entry;
-                System.out.println(beiras.getKey() + " : " + beiras.getValue());
+                logger.info(beiras.getKey() + " : " + beiras.getValue());
             }
-            System.out.println("---------");
+            logger.info("---------");
         }
     }
 
@@ -80,7 +79,7 @@ public class GrafModel implements Serializable {
         return nemLatogatott;
     }
 
-    public List<Map> getCsucsMapList() {
+    public List<Map<Character, Integer>> getCsucsMapList() {
         return csucsMapList;
     }
 

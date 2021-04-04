@@ -5,6 +5,7 @@
  */
 package dijkstrakonzol;
 
+import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -21,6 +22,7 @@ import java.util.Scanner;
 public class DijkstraKonzol {
 
     private static final Scanner SCANNER = new Scanner(System.in);
+    private static Logger logger = Logger.getLogger(DijkstraKonzol.class.getName());
     private static GrafModel gm;
     private static List<Character> csomok;
     private static boolean mehet = false;
@@ -28,18 +30,18 @@ public class DijkstraKonzol {
 
     public static void main(String[] args) {
 
-        System.out.println("KAPCSOLD BE A CAPSLOCKOT!!!");
-        System.out.println("A program a gráf csomópontjaira az angol ABC nagybetűivel hivatkozik, <A, B, C, ...>");
-        System.out.println("A csomópontok közötti távolságot / súlyozást EGÉSZ számokban méri!");
-        System.out.println("A csomópontok közötti kapcsolatot manuálisan kell megadni!");
-        System.out.println("");
+        logger.info("KAPCSOLD BE A CAPSLOCKOT!!!");
+        logger.info("A program a gráf csomópontjaira az angol ABC nagybetűivel hivatkozik, <A, B, C, ...>");
+        logger.info("A csomópontok közötti távolságot / súlyozást EGÉSZ számokban méri!");
+        logger.info("A csomópontok közötti kapcsolatot manuálisan kell megadni!");
+        logger.info("");
 
         ujGraf();
         if (!betoltes) {
             felElez();
         }
 
-        System.out.println("Ellenőrzöd az adatokat? I / N");
+        logger.info("Ellenőrzöd az adatokat? I / N");
         String valasz = SCANNER.nextLine();
 
         if (valasz.equals("I")) {
@@ -47,12 +49,12 @@ public class DijkstraKonzol {
         }
 
         if (!betoltes) {
-            System.out.println("Elmented a gráfot? I / N");
+            logger.info("Elmented a gráfot? I / N");
             String mentes = SCANNER.nextLine();
 
             if (mentes.equals("I")) {
                 String fileHelye = "";
-                System.out.println("Add meg az elérési utat, a fájl nevével bezárólag! <pl: \"c:/proba/file.dat\"\t Ha üresen hagyod,"
+                logger.info("Add meg az elérési utat, a fájl nevével bezárólag! <pl: \"c:/proba/file.dat\"\t Ha üresen hagyod,"
                         + "a c:/grafjaro/graf.dat\" lesz a mentés helye.");
                 fileHelye = SCANNER.nextLine();
                 if (fileHelye.isEmpty()) {
@@ -63,11 +65,11 @@ public class DijkstraKonzol {
                 try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
                     oos.writeObject(gm);
                 } catch (IOException ex) {
-                    System.out.println("File hiba!" + ex);
+                    logger.info("File hiba!" + ex);
                 }
             }
 
-            System.out.println("Betölthetem az adatokat? I / N");
+            logger.info("Betölthetem az adatokat? I / N");
             String kezdet = SCANNER.nextLine();
             if (kezdet.equals("I")) {
                 rajt();
@@ -87,11 +89,11 @@ public class DijkstraKonzol {
 
     private static void felElez() {
         for (Character ch : csomok) {
-            System.out.println("Hány szomszédja van '" + ch + "'-nak, amit még NEM ADTÁL MEG?");
+            logger.info("Hány szomszédja van '" + ch + "'-nak, amit még NEM ADTÁL MEG?");
             int szomszedokSzama = SCANNER.nextInt();
             SCANNER.nextLine();
             for (int i = 0; i < szomszedokSzama; i++) {
-                System.out.println("Kérem '" + ch + "' " + (i + 1) + ". NEM MEGADOTT szomszédját, és a két csomópont távolsását! <pl: B 2>");
+                logger.info("Kérem '" + ch + "' " + (i + 1) + ". NEM MEGADOTT szomszédját, és a két csomópont távolsását! <pl: B 2>");
                 String s = SCANNER.nextLine();
                 char x = s.charAt(0);
                 int y = Integer.parseInt("" + s.substring(2));
@@ -102,24 +104,23 @@ public class DijkstraKonzol {
     }
 
     private static void ujGraf() {
-        System.out.println("Új gráfot írsz, vagy egy meglévőt töltesz be? I - új gráf / N - betöltés");
+        logger.info("Új gráfot írsz, vagy egy meglévőt töltesz be? I - új gráf / N - betöltés");
         String betolt = SCANNER.nextLine();
 
         if (betolt.equals("N")) {
-            System.out.println("Add meg a betöltendő gráf elérési útját! <pl: \"c:/konyvtar/graf.dat\"");
+            logger.info("Add meg a betöltendő gráf elérési útját! <pl: \"c:/konyvtar/graf.dat\"");
             String eleres = SCANNER.nextLine();
 
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(eleres))) {
                 gm = (GrafModel) ois.readObject();
-                ois.close();
                 betoltes = true;
             } catch (IOException ex) {
-                System.out.println("File hiba!" + ex);;
+                logger.info("File hiba!" + ex);
             } catch (ClassNotFoundException ex) {
-                System.out.println("A gráf nem gráf..." + ex);
+                logger.info("A gráf nem gráf..." + ex);
             }
         } else {
-            System.out.print("Hány csomópontja van a gráfnak? Egész számot írj! \nCsomópontok száma:");
+            logger.info("Hány csomópontja van a gráfnak? Egész számot írj! \nCsomópontok száma:");
             int csucsok = SCANNER.nextInt();
             gm = new GrafModel(csucsok);
         }
@@ -127,7 +128,7 @@ public class DijkstraKonzol {
     }
 
     private static void rajt() {
-        System.out.println("Kérem a kiindulási csomópont BETŰJÉT! <pl: C>");
+        logger.info("Kérem a kiindulási csomópont BETŰJÉT! <pl: C>");
         String startCel = SCANNER.nextLine();
         gm.setStart((char) startCel.charAt(0));
 
@@ -136,16 +137,9 @@ public class DijkstraKonzol {
     }
 
     private static boolean joMan() {
-        boolean manJo = false;
-        System.out.println("Jó lett? I / N");
-        switch (SCANNER.nextLine()) {
-            case "I":
-                manJo = true;
-                break;
-            case "N":
-                ujGraf();
-                break;
-        }
-        return manJo;
+        logger.info("Jó lett? I / N");
+        String valasz = SCANNER.nextLine();
+        return valasz.equals("I");
+
     }
 }
