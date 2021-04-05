@@ -19,11 +19,15 @@ public class GrafLoader {
 
     private static final Logger LOGGER = Logger.getLogger(GrafLoader.class.getName());
 
+    private GrafLoader() {
+    }
+    
+    
+
     public static GrafModel loadGrafFromSource(String filePath) {
         GrafModel loadedGrafModel = new GrafModel();
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath))) {
             loadedGrafModel = (GrafModel) ois.readObject();
-            ois.close();
             LOGGER.info("A betöltés sikerült!");
         } catch (IOException ex) {
             LOGGER.info("File hiba!" + ex);

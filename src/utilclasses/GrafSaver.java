@@ -5,7 +5,6 @@
  */
 package utilclasses;
 
-import dijkstrakonzol.DijkstraKonzol;
 import dijkstrakonzol.GrafModel;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -21,10 +20,12 @@ public class GrafSaver {
     private static final String DEFAULT_SAVE_PATH = "c:/grafjaro/graf.dat";
     private static final Logger LOGGER = Logger.getLogger(GrafSaver.class.getName());
 
+    private GrafSaver() {
+    }
+
     public static void saveGrafWithFilePath(String filePath, GrafModel gm) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
             oos.writeObject(gm);
-            oos.close();
             LOGGER.info("A mentés sikeres!");
         } catch (IOException ex) {
             LOGGER.info("File hiba!" + ex);

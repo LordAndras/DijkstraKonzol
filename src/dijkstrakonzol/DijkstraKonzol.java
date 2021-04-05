@@ -39,14 +39,14 @@ public class DijkstraKonzol {
 
         LOGGER.info("Ellenőrzöd az adatokat? I / N");
         String willCheck = SCANNER.nextLine();
-        if (willCheck.toUpperCase().equals("I")) {
+        if (willCheck.equalsIgnoreCase("I")) {
             gm.grafChecker();
         }
 
         if (!wasLoaded) {
             LOGGER.info("Elmented a gráfot? I / N");
             String willSave = SCANNER.nextLine();
-            if (willSave.toUpperCase().equals("I")) {
+            if (willSave.equalsIgnoreCase("I")) {
                 String filePath = "";
                 LOGGER.info("Add meg az elérési utat, a fájl nevével bezárólag! <pl: c:/proba/file.dat \n Ha ÜRESEN hagyod,"
                         + "a c:/grafjaro/graf.dat\" lesz a mentés helye.");
@@ -61,7 +61,7 @@ public class DijkstraKonzol {
 
         LOGGER.info("Betölthetem az adatokat? I / N");
         String readyToRun = SCANNER.nextLine();
-        if (readyToRun.toUpperCase().equals("I")) {
+        if (readyToRun.equalsIgnoreCase("I")) {
             start();
         } else {
             while (!rightData) {
@@ -95,7 +95,7 @@ public class DijkstraKonzol {
         LOGGER.info("Új gráfot írsz, vagy egy meglévőt töltesz be? I - új gráf / N - betöltés");
         String willLoad = SCANNER.nextLine();
 
-        if (willLoad.toUpperCase().equals("N")) {
+        if (willLoad.equalsIgnoreCase("N")) {
             gm = new GrafModel();
             LOGGER.info("Add meg a betöltendő gráf elérési útját! <pl: c:/konyvtar/graf.dat>");
             String loadFromHere = SCANNER.nextLine();
@@ -122,7 +122,7 @@ public class DijkstraKonzol {
     private static boolean checkedData() {
         LOGGER.info("Jó lett? I / N");
         String valasz = SCANNER.nextLine();
-        return valasz.toUpperCase().equals("I");
+        return valasz.equalsIgnoreCase("I");
 
     }
 }
