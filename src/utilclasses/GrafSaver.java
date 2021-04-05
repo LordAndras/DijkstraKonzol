@@ -19,11 +19,12 @@ import org.apache.log4j.Logger;
 public class GrafSaver {
 
     private static final String DEFAULT_SAVE_PATH = "c:/grafjaro/graf.dat";
-    private static final Logger LOGGER = Logger.getLogger(DijkstraKonzol.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(GrafSaver.class.getName());
 
     public static void saveGrafWithFilePath(String filePath, GrafModel gm) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
             oos.writeObject(gm);
+            oos.close();
             LOGGER.info("A mentés sikeres!");
         } catch (IOException ex) {
             LOGGER.info("File hiba!" + ex);
