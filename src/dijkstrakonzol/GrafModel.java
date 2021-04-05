@@ -14,7 +14,8 @@ import org.apache.log4j.Logger;
 
 public class GrafModel implements Serializable {
 
-    private Logger logger = Logger.getLogger(GrafModel.class.getName());
+    private static final long serialVersionUID = 1234;
+    private transient Logger logger = Logger.getLogger(GrafModel.class.getName());
     private static final int KARAKTER_A = 65;
     private int csucsokSzama;
     private List<Character> nemLatogatott;
@@ -27,7 +28,7 @@ public class GrafModel implements Serializable {
     public GrafModel(int csucsokSzama) {
         this.csucsokSzama = csucsokSzama;
         this.nemLatogatott = new ArrayList<>();
-        csucsMapList = new ArrayList<>();
+        this.csucsMapList = new ArrayList<>();
 
         for (int i = KARAKTER_A; i < KARAKTER_A + csucsokSzama; i++) {
             nemLatogatott.add((char) i);
@@ -45,7 +46,7 @@ public class GrafModel implements Serializable {
 
     }
 
-    public void elezo(char origo, char b, int i) {
+    public void setGraphEdge(char origo, char b, int i) {
 
         Map<Character, Integer> aktMap;
         Map<Character, Integer> masikCsucsMap;
@@ -65,7 +66,7 @@ public class GrafModel implements Serializable {
 
     }
 
-    public void grafEllenor() {
+    public void grafChecker() {
         for (Map<Character, Integer> map : csucsMapList) {
             for (Object entry : map.entrySet()) {
                 Map.Entry<Character, Integer> beiras = (Map.Entry<Character, Integer>) entry;
@@ -97,6 +98,10 @@ public class GrafModel implements Serializable {
 
     public int getCsucsokSzama() {
         return csucsokSzama;
+    }
+
+    public void setLogger(Logger logger) {
+        this.logger = logger;
     }
 
 }

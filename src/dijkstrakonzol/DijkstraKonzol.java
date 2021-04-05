@@ -6,14 +6,10 @@
 package dijkstrakonzol;
 
 import org.apache.log4j.Logger;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.Scanner;
+import utilclasses.GrafLoader;
+import utilclasses.GrafSaver;
 
 /**
  *
@@ -22,124 +18,110 @@ import java.util.Scanner;
 public class DijkstraKonzol {
 
     private static final Scanner SCANNER = new Scanner(System.in);
-    private static Logger logger = Logger.getLogger(DijkstraKonzol.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(DijkstraKonzol.class.getName());
     private static GrafModel gm;
-    private static List<Character> csomok;
-    private static boolean mehet = false;
-    private static boolean betoltes = false;
+    private static List<Character> nodeLetters;
+    private static boolean rightData = false;
+    private static boolean wasLoaded = false;
 
     public static void main(String[] args) {
+        LOGGER.info("A program a gráf csomópontjaira az angol ABC nagybetűivel hivatkozik, <A, B, C, ...>");
+        LOGGER.info("A csomópontok közötti távolságot / súlyozást EGÉSZ számokban méri!");
+        LOGGER.info("A csomópontok közötti kapcsolatot manuálisan kell megadni!");
+        LOGGER.info("");
 
-        logger.info("KAPCSOLD BE A CAPSLOCKOT!!!");
-        logger.info("A program a gráf csomópontjaira az angol ABC nagybetűivel hivatkozik, <A, B, C, ...>");
-        logger.info("A csomópontok közötti távolságot / súlyozást EGÉSZ számokban méri!");
-        logger.info("A csomópontok közötti kapcsolatot manuálisan kell megadni!");
-        logger.info("");
+        newGraf();
 
-        ujGraf();
-        if (!betoltes) {
-            felElez();
+        if (!wasLoaded) {
+            setNeighbourNodes();
         }
 
-        logger.info("Ellenőrzöd az adatokat? I / N");
-        String valasz = SCANNER.nextLine();
-
-        if (valasz.equals("I")) {
-            gm.grafEllenor();
+        LOGGER.info("Ellenőrzöd az adatokat? I / N");
+        String willCheck = SCANNER.nextLine();
+        if (willCheck.equalsIgnoreCase("I")) {
+            gm.grafChecker();
         }
 
-        if (!betoltes) {
-            logger.info("Elmented a gráfot? I / N");
-            String mentes = SCANNER.nextLine();
-
-            if (mentes.equals("I")) {
-                String fileHelye = "";
-                logger.info("Add meg az elérési utat, a fájl nevével bezárólag! <pl: \"c:/proba/file.dat\"\t Ha üresen hagyod,"
+        if (!wasLoaded) {
+            LOGGER.info("Elmented a gráfot? I / N");
+            String willSave = SCANNER.nextLine();
+            if (willSave.equalsIgnoreCase("I")) {
+                String filePath = "";
+                LOGGER.info("Add meg az elérési utat, a fájl nevével bezárólag! <pl: c:/proba/file.dat \n Ha ÜRESEN hagyod,"
                         + "a c:/grafjaro/graf.dat\" lesz a mentés helye.");
-                fileHelye = SCANNER.nextLine();
-                if (fileHelye.isEmpty()) {
-                    fileHelye = "c:/grafjaro/graf.dat";
-                }
-
-                File file = new File(fileHelye);
-                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-                    oos.writeObject(gm);
-                } catch (IOException ex) {
-                    logger.info("File hiba!" + ex);
+                filePath = SCANNER.nextLine();
+                if (filePath.isEmpty()) {
+                    GrafSaver.saveGraf(gm);
+                } else {
+                    GrafSaver.saveGrafWithFilePath(filePath.toLowerCase(), gm);
                 }
             }
+        }
 
-            logger.info("Betölthetem az adatokat? I / N");
-            String kezdet = SCANNER.nextLine();
-            if (kezdet.equals("I")) {
-                rajt();
-            } else {
-                while (!mehet) {
-                    ujGraf();
-                    felElez();
-                    mehet = joMan();
-                }
-                rajt();
-
+        LOGGER.info("Betölthetem az adatokat? I / N");
+        String readyToRun = SCANNER.nextLine();
+        if (readyToRun.equalsIgnoreCase("I")) {
+            start();
+        } else {
+            while (!rightData) {
+                newGraf();
+                setNeighbourNodes();
+                rightData = checkedData();
             }
+            start();
 
         }
 
     }
 
-    private static void felElez() {
-        for (Character ch : csomok) {
-            logger.info("Hány szomszédja van '" + ch + "'-nak, amit még NEM ADTÁL MEG?");
-            int szomszedokSzama = SCANNER.nextInt();
+    private static void setNeighbourNodes() {
+        for (Character ch : nodeLetters) {
+            LOGGER.info("Hány szomszédja van '" + ch + "'-nak, amit még NEM ADTÁL MEG?");
+            int numberOfNeighbours = SCANNER.nextInt();
             SCANNER.nextLine();
-            for (int i = 0; i < szomszedokSzama; i++) {
-                logger.info("Kérem '" + ch + "' " + (i + 1) + ". NEM MEGADOTT szomszédját, és a két csomópont távolsását! <pl: B 2>");
-                String s = SCANNER.nextLine();
+            for (int i = 0; i < numberOfNeighbours; i++) {
+                LOGGER.info("Kérem '" + ch + "' " + (i + 1) + ". NEM MEGADOTT szomszédját, és a két csomópont távolsását! <pl: B 2>");
+                String s = SCANNER.nextLine().toUpperCase();
                 char x = s.charAt(0);
                 int y = Integer.parseInt("" + s.substring(2));
 
-                gm.elezo(ch, x, y);
+                gm.setGraphEdge(ch, x, y);
             }
         }
     }
 
-    private static void ujGraf() {
-        logger.info("Új gráfot írsz, vagy egy meglévőt töltesz be? I - új gráf / N - betöltés");
-        String betolt = SCANNER.nextLine();
+    private static void newGraf() {
+        LOGGER.info("Új gráfot írsz, vagy egy meglévőt töltesz be? I - új gráf / N - betöltés");
+        String willLoad = SCANNER.nextLine();
 
-        if (betolt.equals("N")) {
-            logger.info("Add meg a betöltendő gráf elérési útját! <pl: \"c:/konyvtar/graf.dat\"");
-            String eleres = SCANNER.nextLine();
-
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(eleres))) {
-                gm = (GrafModel) ois.readObject();
-                betoltes = true;
-            } catch (IOException ex) {
-                logger.info("File hiba!" + ex);
-            } catch (ClassNotFoundException ex) {
-                logger.info("A gráf nem gráf..." + ex);
-            }
+        if (willLoad.equalsIgnoreCase("N")) {
+            gm = new GrafModel();
+            LOGGER.info("Add meg a betöltendő gráf elérési útját! <pl: c:/konyvtar/graf.dat>");
+            String loadFromHere = SCANNER.nextLine();
+            gm = GrafLoader.loadGrafFromSource(loadFromHere.toLowerCase());
+            gm.setLogger(Logger.getLogger(GrafLoader.class.getName()));
+            wasLoaded = true;
         } else {
-            logger.info("Hány csomópontja van a gráfnak? Egész számot írj! \nCsomópontok száma:");
+            LOGGER.info("Hány csomópontja van a gráfnak? Egész számot írj! \nCsomópontok száma:");
             int csucsok = SCANNER.nextInt();
             gm = new GrafModel(csucsok);
+            nodeLetters = gm.getNemLatogatott();
         }
-        csomok = gm.getNemLatogatott();
     }
 
-    private static void rajt() {
-        logger.info("Kérem a kiindulási csomópont BETŰJÉT! <pl: C>");
+    private static void start() {
+        LOGGER.info("Kérem a kiindulási csomópont BETŰJÉT! <pl: C>");
         String startCel = SCANNER.nextLine();
-        gm.setStart((char) startCel.charAt(0));
+        gm.setStart((char) startCel.toUpperCase().charAt(0));
 
         GrafJaro jaro = new GrafJaro(gm);
         jaro.jardBe();
     }
 
-    private static boolean joMan() {
-        logger.info("Jó lett? I / N");
+    private static boolean checkedData() {
+        LOGGER.info("Jó lett? I / N");
         String valasz = SCANNER.nextLine();
-        return valasz.equals("I");
+        return valasz.equalsIgnoreCase("I");
 
     }
 }
