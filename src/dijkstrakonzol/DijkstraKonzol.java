@@ -25,7 +25,6 @@ public class DijkstraKonzol {
     private static boolean wasLoaded = false;
 
     public static void main(String[] args) {
-        LOGGER.info("KAPCSOLD BE A CAPSLOCKOT!!!");
         LOGGER.info("A program a gráf csomópontjaira az angol ABC nagybetűivel hivatkozik, <A, B, C, ...>");
         LOGGER.info("A csomópontok közötti távolságot / súlyozást EGÉSZ számokban méri!");
         LOGGER.info("A csomópontok közötti kapcsolatot manuálisan kell megadni!");
@@ -100,7 +99,7 @@ public class DijkstraKonzol {
             LOGGER.info("Add meg a betöltendő gráf elérési útját! <pl: c:/konyvtar/graf.dat>");
             String loadFromHere = SCANNER.nextLine();
             gm = GrafLoader.loadGrafFromSource(loadFromHere.toLowerCase());
-            gm.setLogger(LOGGER);
+            gm.setLogger(Logger.getLogger(GrafLoader.class.getName()));
             wasLoaded = true;
         } else {
             LOGGER.info("Hány csomópontja van a gráfnak? Egész számot írj! \nCsomópontok száma:");
